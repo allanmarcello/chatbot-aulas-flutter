@@ -19,10 +19,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
+  intl: ^0.16.0
   cupertino_icons: ^0.1.2
   flutter_dialogflow: ^0.1.0
-
+  bubble: ^1.1.9+1
+ 
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -39,7 +40,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/credentials.json
+    - assets/Chatbook-197f0f035a16.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

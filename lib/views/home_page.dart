@@ -2,6 +2,10 @@ import 'package:chatbot/models/chat_message.dart';
 import 'package:chatbot/widgets/chat_message_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
+import 'package:intl/intl.dart';
+  var now = new DateTime.now();
+  var formatter = new DateFormat('HH:mm');
+  String formatted = formatter.format(now);
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,6 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _messageList = <ChatMessage>[];
   final _controllerText = new TextEditingController();
+  
 
   @override
   void dispose() {
@@ -27,7 +32,7 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: <Widget>[
           _buildList(),
-          Divider(height: 1.0),
+          Divider(height: 5.0),
           _buildUserInput(),
         ],
       ),
@@ -40,7 +45,8 @@ class _HomePageState extends State<HomePage> {
       child: ListView.builder(
         padding: EdgeInsets.all(8.0),
         reverse: true,
-        itemBuilder: (_, int index) => ChatMessageListItem(chatMessage: _messageList[index]),
+        itemBuilder: (_, int index) =>
+            ChatMessageListItem(chatMessage: _messageList[index]),
         itemCount: _messageList.length,
       ),
     );
@@ -54,8 +60,10 @@ class _HomePageState extends State<HomePage> {
         type: ChatMessageType.received);
 
     // Faz a autenticação com o serviço, envia a mensagem e recebe uma resposta da Intent
-    AuthGoogle authGoogle = await AuthGoogle(fileJson: "assets/credentials.json").build();
-    Dialogflow dialogflow = Dialogflow(authGoogle: authGoogle, language: "pt-BR");
+    AuthGoogle authGoogle =
+        await AuthGoogle(fileJson: "assets/Chatbook-197f0f035a16.json").build();
+    Dialogflow dialogflow =
+        Dialogflow(authGoogle: authGoogle, language: "pt-BR");
     AIResponse response = await dialogflow.detectIntent(query);
 
     // remove a mensagem temporária
@@ -68,25 +76,31 @@ class _HomePageState extends State<HomePage> {
         name: 'Professor',
         text: response.getMessage() ?? '',
         type: ChatMessageType.received);
+   
   }
 
   // Envia uma mensagem com o padrão a direita
   void _sendMessage({String text}) {
     _controllerText.clear();
-    _addMessage(name: 'Kleber Andrade', text: text, type: ChatMessageType.sent);
+    _addMessage(
+        name: 'Kleber Andrade',
+        text: text,
+        type: ChatMessageType.sent,
+        );
   }
 
   // Adiciona uma mensagem na lista de mensagens
-  void _addMessage({String name, String text, ChatMessageType type}) {
-    var message = ChatMessage(
-        text: text, name: name, type: type);
+  void _addMessage(
+      {String name, String text, ChatMessageType type, DateTime vHora}) {
+    var message =
+        ChatMessage(text: text, name: name, type: type, vHora: formatted);
     setState(() {
       _messageList.insert(0, message);
     });
 
     if (type == ChatMessageType.sent) {
       // Envia a mensagem para o chatbot e aguarda sua resposta
-      _dialogFlowRequest(query: message.text);  
+      _dialogFlowRequest(query: message.text);
     }
   }
 
@@ -95,8 +109,9 @@ class _HomePageState extends State<HomePage> {
     return new Flexible(
       child: new TextField(
         controller: _controllerText,
-        decoration: new InputDecoration.collapsed(
-          hintText: "Enviar mensagem",
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
         ),
       ),
     );
@@ -119,7 +134,7 @@ class _HomePageState extends State<HomePage> {
   // Monta uma linha com o campo de text e o botão de enviao
   Widget _buildUserInput() {
     return Container(
-      color: Colors.white,
+      //color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: new Row(
         children: <Widget>[
